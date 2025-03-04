@@ -2,8 +2,10 @@
 import { RouterLink, RouterView } from "vue-router";
 import { ref } from "vue";
 import Logo from "../public/buso.svg";
+import { useUsers } from "./modules/auth/useUsers";
 
 const isMenuOpen = ref(false);
+const { logoutUser, isLoggedIn } = useUsers();
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -11,6 +13,10 @@ const toggleMenu = () => {
 
 const closeMenu = () => {
   isMenuOpen.value = false;
+};
+
+const handleLogout = () => {
+  logoutUser();
 };
 </script>
 
@@ -46,24 +52,49 @@ const closeMenu = () => {
                   Bestiary
                 </RouterLink>
               </li>
+              <li v-if="isLoggedIn">
+                <RouterLink
+                  to="/dashboard"
+                  class="text-zinc-500 transition ease-in-out duration-300 hover:text-zinc-700"
+                >
+                  Dashboard
+                </RouterLink>
+              </li>
             </ul>
           </nav>
-          <RouterLink
-            to="/admin"
+
+          <button
+            v-if="isLoggedIn"
+            @click="handleLogout"
             class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
           >
-            Admin
+            Logout
+          </button>
+          <RouterLink
+            v-else
+            to="/login"
+            class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
+          >
+            Login
           </RouterLink>
         </div>
 
         <!-- Mobile Navigation -->
         <div class="flex items-center gap-4 md:hidden">
-          <RouterLink
-            to="/admin"
+          <button
+            v-if="isLoggedIn"
             class="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
-            @click="closeMenu"
+            @click="handleLogout"
           >
-            Admin
+            Logout
+          </button>
+
+          <RouterLink
+            v-else
+            to="/login"
+            class="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
+          >
+            Login
           </RouterLink>
 
           <button
@@ -104,6 +135,7 @@ const closeMenu = () => {
         </div>
       </div>
 
+      <!-- Mobile Navigation Menu -->
       <nav
         v-if="isMenuOpen"
         class="absolute top-16 left-0 w-full bg-zinc-100 shadow-md md:hidden"
@@ -127,12 +159,20 @@ const closeMenu = () => {
               Bestiary
             </RouterLink>
           </li>
+          <li v-if="isLoggedIn">
+            <RouterLink
+              to="/dashboard"
+              class="text-zinc-700 transition ease-in-out duration-300 hover:text-zinc-900"
+              @click="closeMenu"
+            >
+              Dashboard
+            </RouterLink>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content -->
   <main>
     <RouterView />
   </main>
