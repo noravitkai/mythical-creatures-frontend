@@ -8,6 +8,11 @@ const routes = [
     component: SummonView,
   },
   {
+    path: "/bestiary",
+    name: "bestiary",
+    component: () => import("../views/BestiaryView.vue"),
+  },
+  {
     path: "/register",
     name: "register",
     component: () => import("../views/RegisterView.vue"),

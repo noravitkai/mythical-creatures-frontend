@@ -56,7 +56,6 @@ export const useCreatures = () => {
       powerLevel: creature.powerLevel || 50,
       strengths: creature.strengths || "Not specified",
       weaknesses: creature.weaknesses || "Not specified",
-      folkloreStory: creature.folkloreStory || "Not specified",
       imageURL: creature.imageURL || "https://picsum.photos/500/500",
       category: creature.category,
       _createdBy: userId,

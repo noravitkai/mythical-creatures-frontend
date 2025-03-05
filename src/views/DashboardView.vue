@@ -97,25 +97,23 @@
         </div>
         <div class="mt-4">
           <label class="block text-xs font-semibold text-zinc-600 uppercase">
-            Folklore Story
-          </label>
-          <textarea
-            rows="3"
-            v-model="newCreatureData.folkloreStory"
-            placeholder="Share the folklore story (10–300 characters)"
-            class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
-          ></textarea>
-        </div>
-        <div class="mt-4">
-          <label class="block text-xs font-semibold text-zinc-600 uppercase">
-            Image URL
+            Upload Image
           </label>
           <input
-            type="text"
-            v-model="newCreatureData.imageURL"
-            placeholder="Enter a valid image URL (e.g., https://picsum.photos/500/500)"
-            class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
+            type="file"
+            @change="handleFileChange"
+            class="bg-zinc-100 w-full rounded-md py-1 sm:py-2 text-sm shadow-xs mt-1"
           />
+          <div v-if="newCreatureData.imageURL" class="mt-2">
+            <p class="block text-xs font-semibold text-zinc-600 uppercase">
+              Preview:
+            </p>
+            <img
+              :src="newCreatureData.imageURL"
+              alt="Uploaded Image"
+              class="mt-2 sm:mt-3 w-32 h-32 object-cover border"
+            />
+          </div>
         </div>
         <div class="mt-4 flex justify-start sm:justify-end space-x-2">
           <button
@@ -305,32 +303,6 @@
                         />
                       </div>
                     </div>
-                    <div class="mt-4">
-                      <label
-                        class="block text-xs font-semibold text-zinc-600 uppercase"
-                      >
-                        Folklore Story
-                      </label>
-                      <textarea
-                        rows="3"
-                        v-model="editableCreature.folkloreStory"
-                        placeholder="Folklore Story"
-                        class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
-                      ></textarea>
-                    </div>
-                    <div class="mt-4">
-                      <label
-                        class="block text-xs font-semibold text-zinc-600 uppercase"
-                      >
-                        Image URL
-                      </label>
-                      <input
-                        type="text"
-                        v-model="editableCreature.imageURL"
-                        placeholder="https://example.com/image.jpg"
-                        class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
-                      />
-                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                       <div>
                         <label
@@ -370,6 +342,30 @@
                           readonly
                           class="bg-zinc-200 w-full rounded-md p-1 sm:p-2 text-sm border border-zinc-400 mt-1"
                         />
+                      </div>
+                      <div class="mt-4">
+                        <label
+                          class="block text-xs font-semibold text-zinc-600 uppercase"
+                        >
+                          Upload Image
+                        </label>
+                        <input
+                          type="file"
+                          @change="handleEditableFileChange"
+                          class="bg-zinc-100 w-full rounded-md py-1 sm:py-2 text-sm shadow-xs mt-1"
+                        />
+                        <div v-if="editableCreature.imageURL" class="mt-2">
+                          <p
+                            class="block text-xs font-semibold text-zinc-600 uppercase"
+                          >
+                            Preview:
+                          </p>
+                          <img
+                            :src="editableCreature.imageURL"
+                            alt="Uploaded Image"
+                            class="mt-2 sm:mt-3 w-32 h-32 object-cover border"
+                          />
+                        </div>
                       </div>
                     </div>
                     <div
@@ -428,7 +424,6 @@ const newCreatureData = ref<newCreature>({
   powerLevel: 50,
   strengths: "",
   weaknesses: "",
-  folkloreStory: "",
   imageURL: "",
   category: "",
   _createdBy: "",
@@ -468,13 +463,53 @@ async function handleAddCreature() {
       powerLevel: 50,
       strengths: "",
       weaknesses: "",
-      folkloreStory: "",
       imageURL: "",
       category: "",
       _createdBy: "",
     };
   } catch (err) {
     console.error(err);
+  }
+}
+
+// Handle file selection and upload for new creature
+async function handleFileChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const res = await fetch("http://localhost:4000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      newCreatureData.value.imageURL = data.imageUrl;
+    } catch (err) {
+      console.error("File upload failed", err);
+    }
+  }
+}
+
+// Handle file selection and upload for editable creature
+async function handleEditableFileChange(event: Event) {
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await fetch("http://localhost:4000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      editableCreature.value.imageURL = data.imageUrl;
+    } catch (err) {
+      console.error("File upload failed", err);
+    }
   }
 }
 </script>

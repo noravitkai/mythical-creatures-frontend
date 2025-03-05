@@ -13,7 +13,6 @@ export type Creature = {
   powerLevel: number;
   strengths: string;
   weaknesses: string;
-  folkloreStory: string;
   imageURL: string;
   category: string;
   _createdBy: string;
