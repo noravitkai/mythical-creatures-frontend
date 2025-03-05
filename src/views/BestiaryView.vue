@@ -16,7 +16,7 @@
       v-else
       class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-stretch"
     >
-      <li v-for="creature in creatures" :key="creature._id" class="flex">
+      <li v-for="creature in sortedCreatures" :key="creature._id" class="flex">
         <div
           class="flex flex-col w-full h-full shadow-sm border border-zinc-200 group"
         >
@@ -29,19 +29,19 @@
             <div
               class="absolute inset-0 bg-black bg-opacity-60 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-center items-start p-4 text-white text-sm"
             >
-              <p>
+              <p class="mb-1">
                 <span class="font-bold">Power Level:</span>
                 {{ creature.powerLevel }}
               </p>
-              <p>
+              <p class="mb-1">
                 <span class="font-bold">Strengths:</span>
                 {{ creature.strengths }}
               </p>
-              <p>
+              <p class="mb-1">
                 <span class="font-bold">Weaknesses:</span>
                 {{ creature.weaknesses }}
               </p>
-              <p>
+              <p class="mb-1">
                 <span class="font-bold">Category:</span>
                 {{ getCategoryName(creature.category) }}
               </p>
@@ -67,12 +67,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { useCreatures } from "../modules/useCreatures";
 import { useCategories } from "../modules/useCategories";
 
 const { loading, error, creatures, fetchCreatures } = useCreatures();
 const { fetchCategories, getCategoryName } = useCategories();
+
+const sortedCreatures = computed(() => {
+  return [...creatures.value].sort((a, b) => a.name.localeCompare(b.name));
+});
 
 onMounted(async () => {
   await fetchCreatures();

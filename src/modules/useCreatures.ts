@@ -127,6 +127,28 @@ export const useCreatures = () => {
     }
   };
 
+  // File upload logic for creatures
+  async function uploadFile(event: Event): Promise<string | null> {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files[0]) {
+      const file = target.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await fetch("http://localhost:4000/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        return data.imageUrl;
+      } catch (err) {
+        console.error("File upload failed", err);
+        return null;
+      }
+    }
+    return null;
+  }
+
   return {
     error,
     loading,
@@ -135,5 +157,6 @@ export const useCreatures = () => {
     addCreature,
     deleteCreature,
     getTokenAndUserId,
+    uploadFile,
   };
 };

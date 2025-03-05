@@ -115,7 +115,7 @@
             />
           </div>
         </div>
-        <div class="mt-4 flex justify-start sm:justify-end space-x-2">
+        <div class="mt-4 flex justify-start space-x-2">
           <button
             type="submit"
             class="rounded-md bg-teal-600 px-2 py-1 sm:px-4 sm:py-2 text-sm text-white hover:bg-teal-700 transition duration-300"
@@ -368,9 +368,7 @@
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="mt-4 mb-3 sm:mb-2 flex justify-start sm:justify-end space-x-2"
-                    >
+                    <div class="mt-8 mb-3 sm:mb-2 flex justify-start space-x-2">
                       <button
                         type="button"
                         @click="toggleEdit(creature)"
@@ -409,6 +407,7 @@ const {
   addCreature,
   deleteCreature,
   getTokenAndUserId,
+  uploadFile,
 } = useCreatures();
 const { fetchCategories, getCategoryName } = useCategories();
 
@@ -450,7 +449,7 @@ function confirmAndDelete(id: string) {
   }
 }
 
-// Manage the form submission
+// Manage the form submission for adding a new creature
 async function handleAddCreature() {
   try {
     const { userId } = getTokenAndUserId();
@@ -474,42 +473,17 @@ async function handleAddCreature() {
 
 // Handle file selection and upload for new creature
 async function handleFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files[0]) {
-    const file = target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-    try {
-      const res = await fetch("http://localhost:4000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      newCreatureData.value.imageURL = data.imageUrl;
-    } catch (err) {
-      console.error("File upload failed", err);
-    }
+  const imageUrl = await uploadFile(event);
+  if (imageUrl) {
+    newCreatureData.value.imageURL = imageUrl;
   }
 }
 
 // Handle file selection and upload for editable creature
 async function handleEditableFileChange(event: Event) {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files[0]) {
-    const file = target.files[0];
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const res = await fetch("http://localhost:4000/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      editableCreature.value.imageURL = data.imageUrl;
-    } catch (err) {
-      console.error("File upload failed", err);
-    }
+  const imageUrl = await uploadFile(event);
+  if (imageUrl) {
+    editableCreature.value.imageURL = imageUrl;
   }
 }
 </script>
