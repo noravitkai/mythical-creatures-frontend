@@ -1,15 +1,16 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import type { User } from "../../interfaces/interfaces";
 
 // Reactive variables
-const token = ref<string | null>(null);
-const isLoggedIn = ref<boolean>(false);
+const token = ref<string | null>(localStorage.getItem("lsToken"));
 const error = ref<string | null>(null);
 const user = ref<User | null>(null);
 const username = ref<string>("");
 const email = ref<string>("");
 const password = ref<string>("");
+
+const isLoggedIn = computed(() => !!token.value);
 
 export const useUsers = () => {
   const router = useRouter();
@@ -35,7 +36,6 @@ export const useUsers = () => {
       const authResponse = await response.json();
       token.value = authResponse.data.token;
       user.value = authResponse.data.user;
-      isLoggedIn.value = true;
       localStorage.setItem("lsToken", authResponse.data.token);
       localStorage.setItem("userIdToken", authResponse.data.userId);
       console.log("User logged in successfully", authResponse);
@@ -45,7 +45,6 @@ export const useUsers = () => {
       router.push("/dashboard");
     } catch (err) {
       error.value = (err as Error).message || "An error occurred";
-      isLoggedIn.value = false;
     }
   };
 
@@ -82,7 +81,6 @@ export const useUsers = () => {
   const logoutUser = () => {
     token.value = null;
     user.value = null;
-    isLoggedIn.value = false;
     localStorage.removeItem("lsToken");
     console.log("User logged out successfully");
     router.push("/login");
