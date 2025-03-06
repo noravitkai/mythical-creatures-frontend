@@ -67,8 +67,8 @@
               </p>
             </div>
             <p class="text-sm mt-4">
-              <span class="font-bold">Category:</span>
-              {{ getCategoryName(randomCreature.category) }}
+              <span class="font-bold">Fun Fact: </span>
+              <span class="italic">{{ randomCreature.funFact }}</span>
             </p>
           </div>
           <div class="mt-8 sm:mt-0">
@@ -89,10 +89,8 @@
 import { ref, onMounted } from "vue";
 import type { Creature } from "../interfaces/interfaces";
 import { useCreatures } from "../modules/useCreatures";
-import { useCategories } from "../modules/useCategories";
 
 const { creatures, fetchCreatures } = useCreatures();
-const { fetchCategories, getCategoryName } = useCategories();
 
 const randomCreature = ref<Creature | null>(null);
 
@@ -105,6 +103,5 @@ const generateRandomCreature = () => {
 
 onMounted(async () => {
   await fetchCreatures();
-  await fetchCategories();
 });
 </script>

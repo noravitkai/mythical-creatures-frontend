@@ -6,8 +6,8 @@
     </p>
 
     <!-- Section for adding a new creature -->
-    <div class="mt-8">
-      <h2 class="text-2xl font-bold mb-4">Add a new creature</h2>
+    <section class="mt-8">
+      <h2 class="text-2xl font-bold mb-4">Add a New Creature</h2>
       <form @submit.prevent="handleAddCreature">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -17,7 +17,7 @@
             <input
               type="text"
               v-model="newCreatureData.name"
-              placeholder="Enter Hungarian name of the creature (3–255 characters)"
+              placeholder="Enter Hungarian name of the creature (max. 255 characters)"
               class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
               required
             />
@@ -29,7 +29,7 @@
             <input
               type="text"
               v-model="newCreatureData.translation"
-              placeholder="Enter the English translation (3–255 characters)"
+              placeholder="Enter the English translation (max. 255 characters)"
               class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
             />
           </div>
@@ -41,7 +41,7 @@
           <textarea
             rows="3"
             v-model="newCreatureData.description"
-            placeholder="Provide a brief description (6–150 characters)"
+            placeholder="Provide a brief description (max. 300 characters)"
             class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
           ></textarea>
         </div>
@@ -59,16 +59,14 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-zinc-600 uppercase">
-              Category
+              Fun Fact
             </label>
-            <select
-              v-model="newCreatureData.category"
+            <input
+              type="text"
+              v-model="newCreatureData.funFact"
+              placeholder="Write a fun fact about the creature (max. 255 characters)"
               class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
-              required
-            >
-              <option disabled value="">Select a category</option>
-              <option value="67c0a57fe823b48e753d246e">Dragon</option>
-            </select>
+            />
           </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -79,7 +77,7 @@
             <input
               type="text"
               v-model="newCreatureData.strengths"
-              placeholder="List key strengths (3–255 characters)"
+              placeholder="List key strengths (max. 255 characters)"
               class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
             />
           </div>
@@ -90,7 +88,7 @@
             <input
               type="text"
               v-model="newCreatureData.weaknesses"
-              placeholder="List key weaknesses (3–255 characters)"
+              placeholder="List key weaknesses (max. 255 characters)"
               class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
             />
           </div>
@@ -110,7 +108,7 @@
             </p>
             <img
               :src="newCreatureData.imageURL"
-              alt="Uploaded Image"
+              alt="Creature Image"
               class="mt-2 sm:mt-3 w-32 h-32 object-cover border"
             />
           </div>
@@ -124,11 +122,11 @@
           </button>
         </div>
       </form>
-    </div>
+    </section>
 
     <!-- Table for displaying creatures -->
     <div class="mt-8">
-      <h2 class="text-2xl font-bold mb-4">Collection of creatures</h2>
+      <h2 class="text-2xl font-bold mb-4">Collection of Creatures</h2>
       <div class="overflow-x-auto">
         <table class="min-w-full text-zinc-900">
           <thead>
@@ -151,7 +149,7 @@
               <th
                 class="px-2 py-1 sm:px-4 sm:py-2 border-b border-zinc-200 text-left text-xs font-semibold text-zinc-600 uppercase"
               >
-                Category
+                Power Level
               </th>
               <th
                 class="px-2 py-1 sm:px-4 sm:py-2 border-b border-zinc-200 text-left text-xs font-semibold text-zinc-600 uppercase"
@@ -178,7 +176,7 @@
                   {{ creature.translation }}
                 </td>
                 <td class="px-2 py-1 sm:px-4 sm:py-2 text-sm">
-                  {{ getCategoryName(creature.category) }}
+                  {{ creature.powerLevel }}
                 </td>
                 <td class="px-2 py-1 sm:px-4 sm:py-2 text-sm">
                   <div class="flex flex-col items-start space-y-2">
@@ -215,6 +213,7 @@
                         <input
                           type="text"
                           v-model="editableCreature.name"
+                          placeholder="Enter Hungarian name of the creature (max. 255 characters)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                         />
                       </div>
@@ -227,6 +226,7 @@
                         <input
                           type="text"
                           v-model="editableCreature.translation"
+                          placeholder="Enter the English translation (max. 255 characters)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                         />
                       </div>
@@ -240,7 +240,7 @@
                       <textarea
                         rows="3"
                         v-model="editableCreature.description"
-                        placeholder="Description"
+                        placeholder="Provide a brief description (max. 300 characters)"
                         class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                       ></textarea>
                     </div>
@@ -254,7 +254,7 @@
                         <input
                           type="number"
                           v-model.number="editableCreature.powerLevel"
-                          placeholder="Power Level"
+                          placeholder="Set power level (1–100)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                         />
                       </div>
@@ -262,17 +262,14 @@
                         <label
                           class="block text-xs font-semibold text-zinc-600 uppercase"
                         >
-                          Category
+                          Fun Fact
                         </label>
-                        <select
-                          v-model="editableCreature.category"
+                        <input
+                          type="text"
+                          v-model="editableCreature.funFact"
+                          placeholder="Write a fun fact about the creature (max. 255 characters)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
-                        >
-                          <option disabled value="">Select a category</option>
-                          <option value="67c0a57fe823b48e753d246e">
-                            Dragon
-                          </option>
-                        </select>
+                        />
                       </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -285,7 +282,7 @@
                         <input
                           type="text"
                           v-model="editableCreature.strengths"
-                          placeholder="Strengths"
+                          placeholder="List key strengths (max. 255 characters)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                         />
                       </div>
@@ -298,7 +295,7 @@
                         <input
                           type="text"
                           v-model="editableCreature.weaknesses"
-                          placeholder="Weaknesses"
+                          placeholder="List key weaknesses (max. 255 characters)"
                           class="bg-zinc-100 w-full rounded-md p-1 sm:p-2 text-sm shadow-xs border border-zinc-400 mt-1"
                         />
                       </div>
@@ -399,9 +396,7 @@
 import { ref, onMounted } from "vue";
 import type { Creature, newCreature } from "../interfaces/interfaces";
 import { useCreatures } from "../modules/useCreatures";
-import { useCategories } from "../modules/useCategories";
 
-// Composable functions for creatures & categories
 const {
   creatures,
   fetchCreatures,
@@ -411,7 +406,6 @@ const {
   uploadFile,
   updateCreature,
 } = useCreatures();
-const { fetchCategories, getCategoryName } = useCategories();
 
 // Reactive state for inline editing
 const expandedRowId = ref<string | null>(null);
@@ -425,17 +419,16 @@ const newCreatureData = ref<newCreature>({
   powerLevel: 50,
   strengths: "",
   weaknesses: "",
+  funFact: "",
   imageURL: "",
-  category: "",
   _createdBy: "",
 });
 
 onMounted(async () => {
   await fetchCreatures();
-  await fetchCategories();
 });
 
-// Toggle editing mode
+// Toggle editing mode for a creature
 function toggleEdit(creature: Creature) {
   if (expandedRowId.value === creature._id) {
     expandedRowId.value = null;
@@ -465,7 +458,7 @@ async function handleAddCreature() {
       strengths: "",
       weaknesses: "",
       imageURL: "",
-      category: "",
+      funFact: "",
       _createdBy: "",
     };
   } catch (err) {

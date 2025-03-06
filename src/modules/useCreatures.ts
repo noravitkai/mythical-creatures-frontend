@@ -42,22 +42,21 @@ export const useCreatures = () => {
     if (!creature.name) {
       throw new Error("Creature name is required");
     }
-    if (!creature.category) {
-      throw new Error("Category is required");
-    }
   };
 
   // Set default values if not provided
   const setDefaultValues = (creature: newCreature, userId: string) => {
     return {
       name: creature.name,
-      translation: creature.translation || "Not specified",
-      description: creature.description || "Not specified",
+      translation: creature.translation || "No English translation available",
+      description:
+        creature.description || "No description available for this creature",
       powerLevel: creature.powerLevel || 50,
       strengths: creature.strengths || "Not specified",
       weaknesses: creature.weaknesses || "Not specified",
+      funFact:
+        creature.funFact || "No additional information available currently",
       imageURL: creature.imageURL || "https://picsum.photos/500/500",
-      category: creature.category,
       _createdBy: userId,
     };
   };
@@ -82,9 +81,9 @@ export const useCreatures = () => {
         const errorResponse = await response.json();
         throw new Error(errorResponse.error || "No data available");
       }
-      const newCreature: Creature = await response.json();
-      creatures.value.push(newCreature);
-      console.log("Creature added successfully", newCreature);
+      const newCreatureResponse: Creature = await response.json();
+      creatures.value.push(newCreatureResponse);
+      console.log("Creature added successfully", newCreatureResponse);
       await fetchCreatures();
     } catch (err) {
       error.value = (err as Error).message;

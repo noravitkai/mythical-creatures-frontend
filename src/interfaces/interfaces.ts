@@ -13,8 +13,8 @@ export type Creature = {
   powerLevel: number;
   strengths: string;
   weaknesses: string;
+  funFact: string;
   imageURL: string;
-  category: string;
   _createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -22,11 +22,4 @@ export type Creature = {
 
 export type newCreature = Omit<Creature, "_id" | "createdAt" | "updatedAt"> & {
   _createdBy?: string;
-};
-
-export type Category = {
-  _id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
 };

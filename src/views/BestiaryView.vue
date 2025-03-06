@@ -42,8 +42,8 @@
                 {{ creature.weaknesses }}
               </p>
               <p class="mb-1">
-                <span class="font-bold">Category:</span>
-                {{ getCategoryName(creature.category) }}
+                <span class="font-bold">Fun Fact:</span>
+                {{ creature.funFact }}
               </p>
             </div>
           </div>
@@ -69,10 +69,8 @@
 <script setup lang="ts">
 import { onMounted, computed } from "vue";
 import { useCreatures } from "../modules/useCreatures";
-import { useCategories } from "../modules/useCategories";
 
 const { loading, error, creatures, fetchCreatures } = useCreatures();
-const { fetchCategories, getCategoryName } = useCategories();
 
 const sortedCreatures = computed(() => {
   return [...creatures.value].sort((a, b) => a.name.localeCompare(b.name));
@@ -80,6 +78,5 @@ const sortedCreatures = computed(() => {
 
 onMounted(async () => {
   await fetchCreatures();
-  await fetchCategories();
 });
 </script>
