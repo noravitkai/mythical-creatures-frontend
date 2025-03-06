@@ -1,6 +1,110 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8">
-    <h1 class="text-3xl font-bold">Summon a Creature</h1>
-    <p class="mt-2 text-lg">Welcome to the front page.</p>
-  </div>
+  <section
+    v-if="!randomCreature"
+    class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:items-center"
+  >
+    <div class="mx-auto max-w-2xl text-left lg:text-center">
+      <h1 class="text-3xl font-extrabold sm:text-5xl">
+        Enter the Enchanted Realm.
+        <strong class="font-extrabold text-teal-600 sm:block">
+          Summon a Creature.
+        </strong>
+      </h1>
+      <p class="mt-4 max-w-lg mx-auto text-zinc-700">
+        Explore a collection of quirky legends rooted in Hungarian folklore.
+        Click below to randomly summon one of these mythical beings and learn
+        more about their story.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-start lg:justify-center gap-4">
+        <button
+          @click="generateRandomCreature"
+          class="block rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
+        >
+          Summon a Creature
+        </button>
+      </div>
+    </div>
+  </section>
+  <section v-else class="p-4 sm:p-6 lg:p-8">
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8 text-center">
+        <h2
+          class="text-3xl font-medium uppercase tracking-widest text-zinc-900 sm:text-4xl"
+        >
+          {{ randomCreature.name }}
+        </h2>
+        <h3 class="text-xl font-bold text-teal-600 sm:text-2xl">
+          {{ randomCreature.translation }}
+        </h3>
+      </div>
+      <div class="flex flex-col sm:flex-row">
+        <div class="sm:w-1/2">
+          <img
+            :src="randomCreature.imageURL"
+            alt="Creature image"
+            class="w-full h-72 sm:h-80 object-cover mb-4 sm:mb-0"
+          />
+        </div>
+        <div
+          class="sm:w-1/2 flex flex-col h-auto sm:h-80 sm:justify-between sm:pl-6"
+        >
+          <div>
+            <p class="text-sm">
+              {{ randomCreature.description }}
+            </p>
+            <div class="space-y-1 mt-4">
+              <p class="text-sm">
+                <span class="font-bold">Power Level:</span>
+                {{ randomCreature.powerLevel }}
+              </p>
+              <p class="text-sm">
+                <span class="font-bold">Strengths:</span>
+                {{ randomCreature.strengths }}
+              </p>
+              <p class="text-sm">
+                <span class="font-bold">Weaknesses:</span>
+                {{ randomCreature.weaknesses }}
+              </p>
+            </div>
+            <p class="text-sm mt-4">
+              <span class="font-bold">Category:</span>
+              {{ getCategoryName(randomCreature.category) }}
+            </p>
+          </div>
+          <div class="mt-8 sm:mt-0">
+            <button
+              @click="generateRandomCreature"
+              class="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-zinc-100 shadow-sm transition ease-in-out duration-300 hover:bg-teal-700"
+            >
+              Summon Another Creature
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import type { Creature } from "../interfaces/interfaces";
+import { useCreatures } from "../modules/useCreatures";
+import { useCategories } from "../modules/useCategories";
+
+const { creatures, fetchCreatures } = useCreatures();
+const { fetchCategories, getCategoryName } = useCategories();
+
+const randomCreature = ref<Creature | null>(null);
+
+const generateRandomCreature = () => {
+  if (creatures.value.length > 0) {
+    const index = Math.floor(Math.random() * creatures.value.length);
+    randomCreature.value = creatures.value[index];
+  }
+};
+
+onMounted(async () => {
+  await fetchCreatures();
+  await fetchCategories();
+});
+</script>
