@@ -378,6 +378,7 @@
                       </button>
                       <button
                         type="button"
+                        @click="handleUpdateCreature(creature._id)"
                         class="rounded-md bg-teal-600 px-2 py-1 sm:px-4 sm:py-2 text-sm text-white hover:bg-teal-700 transition duration-300"
                       >
                         Save
@@ -408,6 +409,7 @@ const {
   deleteCreature,
   getTokenAndUserId,
   uploadFile,
+  updateCreature,
 } = useCreatures();
 const { fetchCategories, getCategoryName } = useCategories();
 
@@ -466,6 +468,16 @@ async function handleAddCreature() {
       category: "",
       _createdBy: "",
     };
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Manage updating a creature
+async function handleUpdateCreature(id: string) {
+  try {
+    await updateCreature(id, editableCreature.value);
+    expandedRowId.value = null;
   } catch (err) {
     console.error(err);
   }

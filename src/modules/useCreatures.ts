@@ -127,7 +127,59 @@ export const useCreatures = () => {
     }
   };
 
-  // File upload logic for creatures
+  // Update a creature on the server
+  const updateCreatureOnServer = async (
+    id: string,
+    updatedCreature: Partial<Creature>,
+    token: string
+  ): Promise<Creature> => {
+    const response = await fetch(`http://localhost:4000/api/creatures/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+      body: JSON.stringify(updatedCreature),
+    });
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.error || "No data available");
+    }
+    return await response.json();
+  };
+
+  // Update a creature in the state
+  const updateCreatureInState = (
+    id: string,
+    updatedCreature: Creature
+  ): void => {
+    const index = creatures.value.findIndex((c) => c._id === id);
+    if (index !== -1) {
+      creatures.value[index] = updatedCreature;
+    }
+  };
+
+  // Update a creature with new data
+  const updateCreature = async (
+    id: string,
+    updatedCreature: Partial<Creature>
+  ): Promise<void> => {
+    try {
+      const { token } = getTokenAndUserId();
+      const updatedCreatureResponse = await updateCreatureOnServer(
+        id,
+        updatedCreature,
+        token
+      );
+      updateCreatureInState(id, updatedCreatureResponse);
+      await fetchCreatures();
+      console.log("Creature updated successfully", updatedCreatureResponse);
+    } catch (err) {
+      error.value = (err as Error).message;
+    }
+  };
+
+  // File upload logic
   async function uploadFile(event: Event): Promise<string | null> {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
@@ -154,9 +206,10 @@ export const useCreatures = () => {
     loading,
     creatures,
     fetchCreatures,
+    getTokenAndUserId,
     addCreature,
     deleteCreature,
-    getTokenAndUserId,
+    updateCreature,
     uploadFile,
   };
 };
