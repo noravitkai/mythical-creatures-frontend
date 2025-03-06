@@ -10,7 +10,9 @@ export const useCreatures = () => {
   const fetchCreatures = async (): Promise<void> => {
     loading.value = true;
     try {
-      const response = await fetch("http://localhost:4000/api/creatures");
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/creatures"
+      );
       if (!response.ok) {
         throw new Error("No data available");
       }
@@ -68,14 +70,17 @@ export const useCreatures = () => {
       validateCreature(creature);
       const creatureWithDefaults = setDefaultValues(creature, userId);
 
-      const response = await fetch("http://localhost:4000/api/creatures", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": token,
-        },
-        body: JSON.stringify(creatureWithDefaults),
-      });
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/creatures",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+          body: JSON.stringify(creatureWithDefaults),
+        }
+      );
 
       if (!response.ok) {
         const errorResponse = await response.json();
@@ -95,12 +100,15 @@ export const useCreatures = () => {
     id: string,
     token: string
   ): Promise<void> => {
-    const response = await fetch(`http://localhost:4000/api/creatures/${id}`, {
-      method: "DELETE",
-      headers: {
-        "auth-token": token,
-      },
-    });
+    const response = await fetch(
+      `https://my-awesome-ments-api.onrender.com/api/creatures/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "auth-token": token,
+        },
+      }
+    );
 
     if (!response.ok) {
       console.log("Creature not deleted");
@@ -132,14 +140,17 @@ export const useCreatures = () => {
     updatedCreature: Partial<Creature>,
     token: string
   ): Promise<Creature> => {
-    const response = await fetch(`http://localhost:4000/api/creatures/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-      body: JSON.stringify(updatedCreature),
-    });
+    const response = await fetch(
+      `https://my-awesome-ments-api.onrender.com/api/creatures/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+        body: JSON.stringify(updatedCreature),
+      }
+    );
     if (!response.ok) {
       const errorResponse = await response.json();
       throw new Error(errorResponse.error || "No data available");
@@ -186,10 +197,13 @@ export const useCreatures = () => {
       const formData = new FormData();
       formData.append("image", file);
       try {
-        const res = await fetch("http://localhost:4000/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const res = await fetch(
+          "https://my-awesome-ments-api.onrender.com/api/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
         const data = await res.json();
         return data.imageUrl;
       } catch (err) {

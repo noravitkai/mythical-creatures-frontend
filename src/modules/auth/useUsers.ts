@@ -18,14 +18,17 @@ export const useUsers = () => {
   // Fetch token with details
   const fetchToken = async (email: string, password: string): Promise<void> => {
     try {
-      const response = await fetch("http://localhost:4000/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("lsToken") || "",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/user/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": localStorage.getItem("lsToken") || "",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       if (!response.ok) {
         const errorResponse = await response.json();
@@ -55,13 +58,16 @@ export const useUsers = () => {
     password: string
   ): Promise<void> => {
     try {
-      const response = await fetch("http://localhost:4000/api/user/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/user/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, email, password }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("No data available");
