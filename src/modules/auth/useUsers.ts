@@ -70,14 +70,15 @@ export const useUsers = () => {
       );
 
       if (!response.ok) {
-        throw new Error("No data available");
+        const errorResponse = await response.json();
+        throw new Error(errorResponse.error || "Registration failed");
       }
 
       const authResponse = await response.json();
-      token.value = authResponse.data.token;
-      user.value = authResponse.data.user;
-      localStorage.setItem("lsToken", authResponse.data.token);
-      console.log("User is registered successfully", authResponse);
+      console.log("User registered successfully", authResponse);
+
+      // Redirect to the login after successful registration
+      router.push("/login");
     } catch (err) {
       error.value = (err as Error).message || "An error occurred";
     }
