@@ -63,12 +63,48 @@ export const useCreatures = () => {
     };
   };
 
-  // Add a new creature with default values
-  const addCreature = async (creature: newCreature): Promise<void> => {
+  // Upload the image file
+  async function uploadImage(file: File): Promise<string | null> {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const res = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      return data.imageUrl;
+    } catch (err) {
+      console.error("File upload failed", err);
+      return null;
+    }
+  }
+
+  // Add a new creature with image upload
+  const addCreature = async (
+    creature: newCreature,
+    imageFile: File | null
+  ): Promise<void> => {
     try {
       const { token, userId } = getTokenAndUserId();
       validateCreature(creature);
-      const creatureWithDefaults = setDefaultValues(creature, userId);
+
+      // Set defaults from provided creature data
+      let creatureWithDefaults = setDefaultValues(creature, userId);
+
+      // If an image file is provided, upload it and override the default imageURL
+      if (imageFile) {
+        const uploadedImageUrl = await uploadImage(imageFile);
+        if (uploadedImageUrl) {
+          creatureWithDefaults = {
+            ...creatureWithDefaults,
+            imageURL: uploadedImageUrl,
+          };
+        }
+      }
 
       const response = await fetch(
         "https://my-awesome-ments-api.onrender.com/api/creatures",
@@ -109,7 +145,6 @@ export const useCreatures = () => {
         },
       }
     );
-
     if (!response.ok) {
       console.log("Creature not deleted");
       throw new Error("No data available");
@@ -189,31 +224,6 @@ export const useCreatures = () => {
     }
   };
 
-  // File upload logic
-  async function uploadFile(event: Event): Promise<string | null> {
-    const target = event.target as HTMLInputElement;
-    if (target.files && target.files[0]) {
-      const file = target.files[0];
-      const formData = new FormData();
-      formData.append("image", file);
-      try {
-        const res = await fetch(
-          "https://my-awesome-ments-api.onrender.com/api/upload",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-        const data = await res.json();
-        return data.imageUrl;
-      } catch (err) {
-        console.error("File upload failed", err);
-        return null;
-      }
-    }
-    return null;
-  }
-
   return {
     error,
     loading,
@@ -223,6 +233,6 @@ export const useCreatures = () => {
     addCreature,
     deleteCreature,
     updateCreature,
-    uploadFile,
+    uploadImage,
   };
 };

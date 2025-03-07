@@ -402,9 +402,9 @@ const {
   fetchCreatures,
   addCreature,
   deleteCreature,
-  getTokenAndUserId,
-  uploadFile,
   updateCreature,
+  getTokenAndUserId,
+  uploadImage,
 } = useCreatures();
 
 // Reactive state for inline editing
@@ -449,7 +449,7 @@ async function handleAddCreature() {
   try {
     const { userId } = getTokenAndUserId();
     newCreatureData.value._createdBy = userId;
-    await addCreature(newCreatureData.value);
+    await addCreature(newCreatureData.value, null);
     newCreatureData.value = {
       name: "",
       translation: "",
@@ -457,8 +457,8 @@ async function handleAddCreature() {
       powerLevel: 50,
       strengths: "",
       weaknesses: "",
-      imageURL: "",
       funFact: "",
+      imageURL: "",
       _createdBy: "",
     };
   } catch (err) {
@@ -478,17 +478,25 @@ async function handleUpdateCreature(id: string) {
 
 // Handle file selection and upload for new creature
 async function handleFileChange(event: Event) {
-  const imageUrl = await uploadFile(event);
-  if (imageUrl) {
-    newCreatureData.value.imageURL = imageUrl;
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    const imageUrl = await uploadImage(file);
+    if (imageUrl) {
+      newCreatureData.value.imageURL = imageUrl;
+    }
   }
 }
 
 // Handle file selection and upload for editable creature
 async function handleEditableFileChange(event: Event) {
-  const imageUrl = await uploadFile(event);
-  if (imageUrl) {
-    editableCreature.value.imageURL = imageUrl;
+  const target = event.target as HTMLInputElement;
+  if (target.files && target.files[0]) {
+    const file = target.files[0];
+    const imageUrl = await uploadImage(file);
+    if (imageUrl) {
+      editableCreature.value.imageURL = imageUrl;
+    }
   }
 }
 </script>
