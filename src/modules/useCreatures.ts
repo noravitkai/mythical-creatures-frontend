@@ -5,6 +5,7 @@ export const useCreatures = () => {
   const error = ref<string | null>(null);
   const loading = ref<boolean>(false);
   const creatures = ref<Creature[]>([]);
+  const imageUploading = ref<boolean>(false);
 
   // Fetch all creatures
   const fetchCreatures = async (): Promise<void> => {
@@ -68,13 +69,13 @@ export const useCreatures = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      const { token } = getTokenAndUserId();
+      imageUploading.value = true;
       const res = await fetch(
         "https://my-awesome-ments-api.onrender.com/api/upload",
         {
           method: "POST",
           headers: {
-            "auth-token": token,
+            "auth-token": getTokenAndUserId().token,
           },
           body: formData,
         }
@@ -87,6 +88,8 @@ export const useCreatures = () => {
     } catch (err) {
       console.error("File upload failed", err);
       return null;
+    } finally {
+      imageUploading.value = false;
     }
   }
 
@@ -98,11 +101,8 @@ export const useCreatures = () => {
     try {
       const { token, userId } = getTokenAndUserId();
       validateCreature(creature);
-
-      // Set defaults from provided creature data
       let creatureWithDefaults = setDefaultValues(creature, userId);
 
-      // If an image file is provided, upload it and override the default imageURL
       if (imageFile) {
         const uploadedImageUrl = await uploadImage(imageFile);
         if (uploadedImageUrl) {
@@ -235,6 +235,7 @@ export const useCreatures = () => {
     error,
     loading,
     creatures,
+    imageUploading,
     fetchCreatures,
     getTokenAndUserId,
     addCreature,

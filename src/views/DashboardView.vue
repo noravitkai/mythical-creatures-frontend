@@ -102,7 +102,10 @@
             @change="handleFileChange"
             class="bg-zinc-100 w-full rounded-md py-1 sm:py-2 text-sm shadow-xs mt-1"
           />
-          <div v-if="newCreatureData.imageURL" class="mt-2">
+          <div v-if="imageUploading" class="mt-2 text-sm text-teal-600">
+            Uploading image...
+          </div>
+          <div v-else-if="newCreatureData.imageURL" class="mt-2">
             <p class="block text-xs font-semibold text-zinc-600 uppercase">
               Preview:
             </p>
@@ -351,7 +354,13 @@
                           @change="handleEditableFileChange"
                           class="bg-zinc-100 w-full rounded-md py-1 sm:py-2 text-sm shadow-xs mt-1"
                         />
-                        <div v-if="editableCreature.imageURL" class="mt-2">
+                        <div
+                          v-if="editableImageUploading"
+                          class="mt-2 text-sm text-teal-600"
+                        >
+                          Uploading image...
+                        </div>
+                        <div v-else-if="editableCreature.imageURL" class="mt-2">
                           <p
                             class="block text-xs font-semibold text-zinc-600 uppercase"
                           >
@@ -399,6 +408,7 @@ import { useCreatures } from "../modules/useCreatures";
 
 const {
   creatures,
+  imageUploading,
   fetchCreatures,
   addCreature,
   deleteCreature,
@@ -423,6 +433,9 @@ const newCreatureData = ref<newCreature>({
   imageURL: "",
   _createdBy: "",
 });
+
+// Reactive loading flag for editable image upload
+const editableImageUploading = ref(false);
 
 onMounted(async () => {
   await fetchCreatures();
@@ -449,6 +462,7 @@ async function handleAddCreature() {
   try {
     const { userId } = getTokenAndUserId();
     newCreatureData.value._createdBy = userId;
+    // Pass null for imageFile if no new file is selected.
     await addCreature(newCreatureData.value, null);
     newCreatureData.value = {
       name: "",
@@ -492,11 +506,13 @@ async function handleFileChange(event: Event) {
 async function handleEditableFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
+    editableImageUploading.value = true;
     const file = target.files[0];
     const imageUrl = await uploadImage(file);
     if (imageUrl) {
       editableCreature.value.imageURL = imageUrl;
     }
+    editableImageUploading.value = false;
   }
 }
 </script>
