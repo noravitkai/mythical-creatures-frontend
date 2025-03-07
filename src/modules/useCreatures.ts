@@ -68,13 +68,20 @@ export const useCreatures = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
+      const { token } = getTokenAndUserId();
       const res = await fetch(
         "https://my-awesome-ments-api.onrender.com/api/upload",
         {
           method: "POST",
+          headers: {
+            "auth-token": token,
+          },
           body: formData,
         }
       );
+      if (!res.ok) {
+        throw new Error("Upload failed with status " + res.status);
+      }
       const data = await res.json();
       return data.imageUrl;
     } catch (err) {
