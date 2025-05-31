@@ -41,7 +41,7 @@ const handleLogout = () => {
                   to="/"
                   class="text-zinc-500 transition ease-in-out duration-300 hover:text-zinc-700"
                 >
-                  Summon
+                  Quiz
                 </RouterLink>
               </li>
               <li>
@@ -50,6 +50,14 @@ const handleLogout = () => {
                   class="text-zinc-500 transition ease-in-out duration-300 hover:text-zinc-700"
                 >
                   Bestiary
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink
+                  to="/summon"
+                  class="text-zinc-500 transition ease-in-out duration-300 hover:text-zinc-700"
+                >
+                  Summon
                 </RouterLink>
               </li>
               <li v-if="isLoggedIn">
@@ -147,7 +155,7 @@ const handleLogout = () => {
               class="text-zinc-700 transition ease-in-out duration-300 hover:text-zinc-900"
               @click="closeMenu"
             >
-              Summon
+              Quiz
             </RouterLink>
           </li>
           <li>
@@ -157,6 +165,15 @@ const handleLogout = () => {
               @click="closeMenu"
             >
               Bestiary
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink
+              to="/summon"
+              class="text-zinc-700 transition ease-in-out duration-300 hover:text-zinc-900"
+              @click="closeMenu"
+            >
+              Summon
             </RouterLink>
           </li>
           <li v-if="isLoggedIn">

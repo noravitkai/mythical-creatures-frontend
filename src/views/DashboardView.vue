@@ -1,10 +1,12 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8">
-    <h1 class="text-3xl font-bold">Dashboard</h1>
-    <p class="mt-2 text-lg">
-      Manage the collection of Hungarian mythical creatures.
-    </p>
-
+  <main class="p-4 sm:p-6 lg:p-8">
+    <header>
+      <h1 class="text-3xl font-bold">Dashboard</h1>
+      <p class="mt-2 text-lg">
+        Manage the collection of Hungarian mythical creatures and quiz
+        questions.
+      </p>
+    </header>
     <!-- Section for adding a new creature -->
     <section class="mt-8">
       <h2 class="text-2xl font-bold mb-4">Add a New Creature</h2>
@@ -121,14 +123,13 @@
             type="submit"
             class="rounded-md bg-teal-600 px-2 py-1 sm:px-4 sm:py-2 text-sm text-white hover:bg-teal-700 transition duration-300"
           >
-            Add
+            Save Creature
           </button>
         </div>
       </form>
     </section>
-
-    <!-- Table for displaying creatures -->
-    <div class="mt-8">
+    <!-- Section for displaying, editing, and deleting creatures -->
+    <section class="mt-8">
       <h2 class="text-2xl font-bold mb-4">Collection of Creatures</h2>
       <div class="overflow-x-auto">
         <table class="min-w-full text-zinc-900">
@@ -397,15 +398,228 @@
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
+    </section>
+    <!-- Section for adding a new question -->
+    <section class="mt-12">
+      <h2 class="text-2xl font-bold mb-4">Add a Quiz Question</h2>
+      <form @submit.prevent="handleAddQuestion" class="mb-6">
+        <div>
+          <label class="block text-xs font-semibold text-zinc-600 uppercase">
+            Question
+          </label>
+          <input
+            v-model="newQuestion.text"
+            type="text"
+            placeholder="Enter question or scenario (max. 200 characters)"
+            class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+            required
+          />
+        </div>
+        <div
+          v-for="(opt, idx) in newQuestion.options || []"
+          :key="idx"
+          class="mt-4"
+        >
+          <label class="block text-xs font-semibold text-zinc-600 uppercase">
+            Choice {{ idx + 1 }}
+          </label>
+          <input
+            v-model="opt.text"
+            type="text"
+            placeholder="Enter an answer option (max. 100 characters)"
+            class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+            required
+          />
+          <label
+            class="block text-xs font-semibold text-zinc-600 uppercase mt-2"
+          >
+            Creatures Associated with Option
+          </label>
+          <select
+            v-model="opt.creatureIds"
+            multiple
+            class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+            required
+          >
+            <option v-for="cre in creatures" :key="cre._id" :value="cre._id">
+              {{ cre.name }}
+            </option>
+          </select>
+          <button
+            v-if="idx >= 2"
+            type="button"
+            @click="removeOption(idx)"
+            class="mt-1 text-red-600 hover:text-red-800 text-sm"
+          >
+            Remove Choice
+          </button>
+        </div>
+
+        <button
+          type="button"
+          @click="addOption()"
+          class="mt-4 text-teal-600 hover:text-teal-800"
+        >
+          + Add Option
+        </button>
+        <div class="mt-6">
+          <button
+            type="submit"
+            class="rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700"
+          >
+            Save Question
+          </button>
+        </div>
+      </form>
+      <!-- Section for displaying, editing, and deleting questions -->
+      <div class="mt-8">
+        <h2 class="text-2xl font-bold mb-4">Quiz Questions</h2>
+        <div class="overflow-x-auto">
+          <table class="min-w-full text-zinc-900">
+            <thead>
+              <tr>
+                <th
+                  class="px-2 py-1 sm:px-4 sm:py-2 border-b border-zinc-200 text-left text-xs font-semibold text-zinc-600 uppercase"
+                >
+                  ID
+                </th>
+                <th
+                  class="px-2 py-1 sm:px-4 sm:py-2 border-b border-zinc-200 text-left text-xs font-semibold text-zinc-600 uppercase"
+                >
+                  Question
+                </th>
+                <th
+                  class="px-2 py-1 sm:px-4 sm:py-2 border-b border-zinc-200 text-left text-xs font-semibold text-zinc-600 uppercase"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template v-for="question in questions" :key="question._id">
+                <tr>
+                  <td class="px-4 py-2 text-sm">{{ question._id }}</td>
+                  <td class="px-4 py-2 text-sm">{{ question.text }}</td>
+                  <td class="px-2 py-1 sm:px-4 sm:py-2 text-sm">
+                    <div class="flex flex-col items-start space-y-2">
+                      <button
+                        type="button"
+                        @click="toggleEditQuestion(question)"
+                        class="text-teal-600 hover:text-teal-800 transition duration-300"
+                      >
+                        {{
+                          editingQuestionId === question._id
+                            ? "Cancel"
+                            : "Read/Edit"
+                        }}
+                      </button>
+                      <button
+                        type="button"
+                        @click="confirmDeleteQuestion(question._id)"
+                        class="text-red-600 hover:text-red-800 transition duration-300"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Expandable row for editing -->
+                <tr v-if="editingQuestionId === question._id">
+                  <td colspan="4" class="px-4 py-2">
+                    <form @submit.prevent="handleUpdateQuestion(question._id)">
+                      <div>
+                        <label
+                          class="block text-xs font-semibold text-zinc-600 uppercase"
+                        >
+                          Question
+                        </label>
+                        <input
+                          v-model="editingQuestion.text"
+                          type="text"
+                          class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+                          required
+                        />
+                      </div>
+                      <div
+                        v-for="(opt, idx) in editingQuestion.options || []"
+                        :key="idx"
+                        class="mt-4"
+                      >
+                        <label
+                          class="block text-xs font-semibold text-zinc-600 uppercase"
+                        >
+                          Choice {{ idx + 1 }}
+                        </label>
+                        <input
+                          v-model="opt.text"
+                          type="text"
+                          class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+                          required
+                        />
+
+                        <label
+                          class="block text-xs font-semibold text-zinc-600 uppercase mt-2"
+                        >
+                          Creatures Associated with Option
+                        </label>
+                        <select
+                          v-model="opt.creatureIds"
+                          multiple
+                          class="bg-zinc-100 w-full rounded-md p-2 text-sm border border-zinc-400 mt-1"
+                          required
+                        >
+                          <option
+                            v-for="cre in creatures"
+                            :key="cre._id"
+                            :value="cre._id"
+                          >
+                            {{ cre.name }}
+                          </option>
+                        </select>
+                        <button
+                          v-if="idx >= 2"
+                          type="button"
+                          @click="removeOptionFromEditing(idx)"
+                          class="mt-1 text-red-600 hover:text-red-800 text-sm"
+                        >
+                          Remove Choice
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        @click="addOptionToEditing()"
+                        class="mt-4 text-teal-600 hover:text-teal-800"
+                      >
+                        + Add Option
+                      </button>
+                      <div class="mt-6">
+                        <button
+                          type="submit"
+                          class="rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import type { Creature, newCreature } from "../interfaces/interfaces";
 import { useCreatures } from "../modules/useCreatures";
+import { useQuestions } from "../modules/useQuestions";
+import type { Question } from "../interfaces/interfaces";
 
+// Creature composable
 const {
   creatures,
   imageUploading,
@@ -417,11 +631,20 @@ const {
   uploadImage,
 } = useCreatures();
 
-// Reactive state for inline editing
+// Question composable
+const {
+  questions,
+  fetchQuestions,
+  addQuestion,
+  updateQuestion,
+  deleteQuestion,
+  getTokenAndUserId: getTokenAndUserIdQ,
+} = useQuestions();
+
+// Creature state
 const expandedRowId = ref<string | null>(null);
 const editableCreature = ref<Partial<Creature>>({});
 
-// Reactive state for adding a new creature
 const newCreatureData = ref<newCreature>({
   name: "",
   translation: "",
@@ -434,14 +657,27 @@ const newCreatureData = ref<newCreature>({
   _createdBy: "",
 });
 
-// Reactive loading flag for editable image upload
 const editableImageUploading = ref(false);
+
+// Question state
+const newQuestion = ref<Partial<Question>>({
+  text: "",
+  options: [
+    { text: "", creatureIds: [] },
+    { text: "", creatureIds: [] },
+  ],
+  _createdBy: "",
+});
+
+const editingQuestionId = ref<string | null>(null);
+const editingQuestion = ref<Partial<Question>>({});
 
 onMounted(async () => {
   await fetchCreatures();
+  await fetchQuestions();
 });
 
-// Toggle editing mode for a creature
+// Creature methods
 function toggleEdit(creature: Creature) {
   if (expandedRowId.value === creature._id) {
     expandedRowId.value = null;
@@ -457,13 +693,11 @@ function confirmAndDelete(id: string) {
   }
 }
 
-// Manage the form submission for adding a new creature
 async function handleAddCreature() {
   try {
     const { userId } = getTokenAndUserId();
     newCreatureData.value._createdBy = userId;
-    // Pass null for imageFile if no new file is selected.
-    await addCreature(newCreatureData.value, null);
+    await addCreature(newCreatureData.value as newCreature, null);
     newCreatureData.value = {
       name: "",
       translation: "",
@@ -480,17 +714,15 @@ async function handleAddCreature() {
   }
 }
 
-// Manage updating a creature
 async function handleUpdateCreature(id: string) {
   try {
-    await updateCreature(id, editableCreature.value);
+    await updateCreature(id, editableCreature.value as Creature);
     expandedRowId.value = null;
   } catch (err) {
     console.error(err);
   }
 }
 
-// Handle file selection and upload for new creature
 async function handleFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
@@ -502,7 +734,6 @@ async function handleFileChange(event: Event) {
   }
 }
 
-// Handle file selection and upload for editable creature
 async function handleEditableFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
@@ -513,6 +744,66 @@ async function handleEditableFileChange(event: Event) {
       editableCreature.value.imageURL = imageUrl;
     }
     editableImageUploading.value = false;
+  }
+}
+
+// Question methods
+function addOption() {
+  newQuestion.value.options?.push({ text: "", creatureIds: [] });
+}
+
+function addOptionToEditing() {
+  editingQuestion.value.options?.push({ text: "", creatureIds: [] });
+}
+
+function removeOption(idx: number) {
+  newQuestion.value.options?.splice(idx, 1);
+}
+
+function removeOptionFromEditing(idx: number) {
+  editingQuestion.value.options?.splice(idx, 1);
+}
+
+async function handleAddQuestion() {
+  try {
+    const { userId } = getTokenAndUserIdQ();
+    newQuestion.value._createdBy = userId;
+    await addQuestion(newQuestion.value as any);
+    newQuestion.value = {
+      text: "",
+      options: [
+        { text: "", creatureIds: [] },
+        { text: "", creatureIds: [] },
+      ],
+      _createdBy: "",
+    };
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function toggleEditQuestion(question: Question) {
+  if (editingQuestionId.value === question._id) {
+    editingQuestionId.value = null;
+    editingQuestion.value = {};
+  } else {
+    editingQuestionId.value = question._id;
+    editingQuestion.value = { ...question };
+  }
+}
+
+async function handleUpdateQuestion(id: string) {
+  try {
+    await updateQuestion(id, editingQuestion.value as Question);
+    editingQuestionId.value = null;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function confirmDeleteQuestion(id: string) {
+  if (confirm("Are you sure you want to delete this question?")) {
+    deleteQuestion(id);
   }
 }
 </script>

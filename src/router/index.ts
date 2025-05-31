@@ -1,16 +1,21 @@
 import { createRouter, createWebHistory } from "vue-router";
-import SummonView from "../views/SummonView.vue";
+import QuizView from "../views/QuizView.vue";
 
 const routes = [
   {
     path: "/",
-    name: "summon",
-    component: SummonView,
+    name: "quiz",
+    component: QuizView,
   },
   {
     path: "/bestiary",
     name: "bestiary",
     component: () => import("../views/BestiaryView.vue"),
+  },
+  {
+    path: "/summon",
+    name: "summon",
+    component: () => import("../views/SummonView.vue"),
   },
   {
     path: "/register",
