@@ -23,7 +23,9 @@ export const useQuestions = () => {
   const fetchQuestions = async (): Promise<void> => {
     loading.value = true;
     try {
-      const response = await fetch("http://localhost:4000/api/questions");
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/questions"
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
@@ -52,14 +54,17 @@ export const useQuestions = () => {
         _createdBy: userId,
       };
 
-      const response = await fetch("http://localhost:4000/api/questions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": token,
-        },
-        body: JSON.stringify(questionPayload),
-      });
+      const response = await fetch(
+        "https://my-awesome-ments-api.onrender.com/api/questions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": token,
+          },
+          body: JSON.stringify(questionPayload),
+        }
+      );
 
       if (!response.ok) {
         const errorResponse = await response.json();
@@ -81,14 +86,17 @@ export const useQuestions = () => {
     payload: Partial<Question>,
     token: string
   ): Promise<Question> => {
-    const response = await fetch(`http://localhost:4000/api/questions/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `https://my-awesome-ments-api.onrender.com/api/questions/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
     if (!response.ok) {
       const errorResponse = await response.json();
       throw new Error(errorResponse.error || "Failed to update question");
@@ -128,12 +136,15 @@ export const useQuestions = () => {
     id: string,
     token: string
   ): Promise<void> => {
-    const response = await fetch(`http://localhost:4000/api/questions/${id}`, {
-      method: "DELETE",
-      headers: {
-        "auth-token": token,
-      },
-    });
+    const response = await fetch(
+      `https://my-awesome-ments-api.onrender.com/api/questions/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "auth-token": token,
+        },
+      }
+    );
     if (!response.ok) {
       const errorResponse = await response.json();
       throw new Error(errorResponse.error || "Failed to delete question");
