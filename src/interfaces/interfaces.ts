@@ -23,3 +23,21 @@ export type Creature = {
 export type newCreature = Omit<Creature, "_id" | "createdAt" | "updatedAt"> & {
   _createdBy?: string;
 };
+
+export type QuestionChoice = {
+  text: string;
+  creatureIds: string[];
+};
+
+export type Question = {
+  _id: string;
+  text: string;
+  options: QuestionChoice[];
+  _createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type newQuestion = Omit<Question, "_id" | "createdAt" | "updatedAt"> & {
+  _createdBy?: string;
+};

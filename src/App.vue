@@ -52,6 +52,14 @@ const handleLogout = () => {
                   Bestiary
                 </RouterLink>
               </li>
+              <li>
+                <RouterLink
+                  to="/quiz"
+                  class="text-zinc-500 transition ease-in-out duration-300 hover:text-zinc-700"
+                >
+                  Quiz
+                </RouterLink>
+              </li>
               <li v-if="isLoggedIn">
                 <RouterLink
                   to="/dashboard"
