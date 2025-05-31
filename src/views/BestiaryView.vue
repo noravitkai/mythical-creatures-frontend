@@ -10,7 +10,7 @@
       </p>
     </header>
 
-    <div v-if="loading" class="mt-8 text-zinc-900">Loading creatures...</div>
+    <div v-if="loading" class="mt-8 text-zinc-900">Loading collection...</div>
     <div v-else-if="error" class="mt-8 text-red-600">{{ error }}</div>
     <ul
       v-else
